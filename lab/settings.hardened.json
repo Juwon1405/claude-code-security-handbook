@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Read(./evidence/**)",
+      "Edit(./derived/**)",
+      "Bash(grep:*)", "Bash(awk:*)", "Bash(wc:*)", "Bash(jq:*)"
+    ],
+    "deny": [
+      "Edit(./evidence/**)",
+      "Read(//**/.env)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "WebFetch",
+      "WebSearch",
+      "Bash(rm:*)", "Bash(curl:*)",
+      "Bash(run_in_background:true)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": false,
+    "filesystem": {
+      "denyWrite": ["~/handbook-lab/evidence"]
+    }
+  }
+}

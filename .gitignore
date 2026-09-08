@@ -1,0 +1,18 @@
+# Generated lab data and local execution artifacts are not publication files.
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+*.pem
+*.key
+lab/evidence/
+lab/derived/
+lab/out/
+lab/failed/
+lab/lab-manifest.txt
+lab/case2-work/
+lab/recovery-work/
+lab/foundations-work/
+lab/.claude/settings.local.json

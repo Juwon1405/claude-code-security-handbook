@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["malicious", "suspicious", "benign", "unknown"],
+      "description": "네 값 중 하나. 증거에서 못 찾으면 unknown"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "info"]
+    },
+    "evidence_line": {
+      "type": "string",
+      "pattern": "^[^\\r\\n\\u0000]*$",
+      "description": "access.log 원문 한 줄. 파일명, 행 번호, 설명을 앞뒤에 붙이지 않는다"
+    },
+    "iocs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reason": {
+      "type": "string",
+      "description": "판단 이유와 한계. 인용한 파일명과 행 번호는 이 필드에 적는다"
+    }
+  },
+  "required": [
+    "verdict",
+    "severity",
+    "evidence_line",
+    "iocs",
+    "reason"
+  ]
+}

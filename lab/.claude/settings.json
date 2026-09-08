@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "Read(./evidence/**)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(wc:*)",
+      "Bash(jq:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Bash(rm:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Bash(echo:*)", "Bash(cat:*)", "Bash(grep:*)",
+      "Bash(awk:*)", "Bash(wc:*)", "Bash(ls:*)",
+      "Read(./**)", "Edit(./evidence/probe.log)", "Edit(./derived/**)"
+    ],
+    "deny": ["Bash(rm:*)", "Bash(curl:*)"],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": false
+  }
+}
