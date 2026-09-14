@@ -11,9 +11,10 @@ description: 알림 한 줄을 받아 증거로 확인하고 판정 JSON 을 돌
 2. 판정은 malicious / suspicious / benign / unknown 넷 중 하나다.
 3. `evidence_line` 에는 찾은 줄을 원문 그대로 한 줄 넣는다. 요약하지 않는다.
 4. 자산 목록으로 확인된 우리 자산이면 `asset` 을 true 로 한다.
+   외부 자산임을 확인한 경우에만 false, 확인 자료가 없으면 null 로 한다.
    자산 여부와 악성 판정은 별도로 판단하며, 내부 자산이라는 이유로
    verdict 를 낮추지 않는다. 우리 자산은 자동 차단 목록에서 제외하고
-   대응 여부를 따로 검토한다.
+   대응 여부를 따로 검토한다. 자산 미확인 항목도 자동 차단에 넘기지 않는다.
 
 출력 형식:
 ```json
@@ -21,7 +22,7 @@ description: 알림 한 줄을 받아 증거로 확인하고 판정 JSON 을 돌
   "verdict": "...",
   "severity": "...",
   "evidence_line": "...",
-  "asset": false,
+  "asset": null,
   "reason": "두 문장 이내"
 }
 ```

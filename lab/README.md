@@ -6,7 +6,7 @@
 
 실습 소스와 사용 안내는 [공개 저장소](https://github.com/juwon1405/claude-code-security-handbook)에서 확인합니다.
 
-이 원고에 대응하는 묶음은 [v0.2.0 배포 페이지](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.0)의 `handbook-lab-files.zip`입니다. 출판 검토 원고에 대응하는 사전 공개판이며, 이후 판본은 각 배포 설명에서 적용 범위를 확인합니다.
+이 원고에 대응하는 묶음은 [v0.2.1 배포 페이지](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)의 `handbook-lab-files.zip`입니다. 출판 검토 원고에 대응하는 사전 공개판이며, 이후 판본은 각 배포 설명에서 적용 범위를 확인합니다.
 
 GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다르므로 아래 설치 명령에는 사용하지 않습니다. 배포 파일 이름이 `handbook-lab-files.zip`인지 확인합니다. 정정 의견은 저장소의 [Issues](https://github.com/juwon1405/claude-code-security-handbook/issues)에 남길 수 있으며, 실제 사건 자료나 계정 정보는 올리지 않습니다.
 

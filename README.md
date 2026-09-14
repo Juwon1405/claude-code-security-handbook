@@ -8,11 +8,11 @@ Claude Code 실무 핸드북 · 방주원
 
 ## 실습 시작하기
 
-1. [v0.2.0 다운로드](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.0)에서 **handbook-lab-files.zip**을 받습니다. 자동 생성된 Source code ZIP과는 다른 파일입니다.
+1. [v0.2.1 다운로드](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)에서 **handbook-lab-files.zip**을 받습니다. 자동 생성된 Source code ZIP과는 다른 파일입니다.
 2. [설치 안내](lab/README.md#처음-설치하기)에 따라 새 실습 폴더를 만들고 파일의 체크섬을 확인합니다.
 3. 합성 데이터를 생성한 뒤 책의 해당 장을 따라갑니다.
 
-기준 환경은 Apple Silicon Mac입니다. Windows 독자를 위한 WSL2·Ubuntu 준비 방법은 부록 D에 담았습니다. macOS·Ubuntu·Windows ARM64에서 확인한 항목과 남은 모델 실습은 [릴리스 안내](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.0)에 정리했습니다.
+기준 환경은 Apple Silicon Mac입니다. Windows 독자를 위한 WSL2·Ubuntu 준비 방법은 부록 D에 담았습니다. 확인한 항목과 남은 실습은 [릴리스 안내](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)에 정리했습니다.
 
 실제 업무 자료와 분리된 폴더에서 제공된 합성 데이터로 실습해 주세요.
 
