@@ -167,22 +167,29 @@ class FixtureTests(unittest.TestCase):
     def test_duplicate_json_keys_and_empty_line_rejected(self):
         self.write(fixture())
         path = self.evidence / "file.jsonl"
-        original = path.read_text()
-        path.write_text(original.replace('"bytes_returned": 7', '"bytes_returned": 7, "bytes_returned": 8'))
+        original = path.read_text(encoding="utf-8")
+        path.write_text(original.replace('"bytes_returned": 7', '"bytes_returned": 7, "bytes_returned": 8'), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
             analyze.read_evidence(self.evidence)
-        path.write_text(original + "\n")
+        path.write_text(original + "\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "empty/oversized"):
             analyze.read_evidence(self.evidence)
 
-    def test_extra_file_and_symlink_rejected(self):
+    def test_extra_file_rejected(self):
         self.write(fixture())
-        (self.evidence / "answer.txt").write_text("not evidence")
+        (self.evidence / "answer.txt").write_text("not evidence", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "exactly"):
             analyze.read_evidence(self.evidence)
-        (self.evidence / "answer.txt").unlink()
+
+    def test_symlink_rejected(self):
+        self.write(fixture())
         (self.evidence / "file.jsonl").rename(self.root / "saved.jsonl")
-        (self.evidence / "file.jsonl").symlink_to(self.root / "saved.jsonl")
+        try:
+            (self.evidence / "file.jsonl").symlink_to(self.root / "saved.jsonl")
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("Windows user lacks the privilege to create a symbolic link")
+            raise
         with self.assertRaisesRegex(ValueError, "regular file"):
             analyze.read_evidence(self.evidence)
 
@@ -225,7 +232,7 @@ class GeneratedDataTests(unittest.TestCase):
             database = sqlite3.connect(":memory:")
             database.execute("CREATE TABLE e(source TEXT, id TEXT, realm TEXT, user TEXT, host TEXT, sid TEXT, ts TEXT, kind TEXT, outcome TEXT, zone TEXT, bytes INTEGER, PRIMARY KEY(source,id))")
             for name in ("auth.jsonl", "file.jsonl", "transfer.jsonl"):
-                for line in (evidence / name).read_text().splitlines():
+                for line in (evidence / name).read_text(encoding="utf-8").splitlines():
                     row = json.loads(line)
                     # SQLite datetime() normalizes the explicit offset; neither
                     # generator timestamp helper nor analyzer parse_time is used.

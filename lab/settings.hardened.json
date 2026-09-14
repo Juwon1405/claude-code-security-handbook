@@ -24,6 +24,7 @@
     "allowUnsandboxedCommands": false,
     "autoAllowBashIfSandboxed": false,
     "filesystem": {
+      "denyRead": ["~/.ssh", "~/.aws", "~/.env"],
       "denyWrite": ["~/handbook-lab/evidence"]
     }
   }

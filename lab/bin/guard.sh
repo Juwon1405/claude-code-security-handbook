@@ -2,14 +2,22 @@
 # PreToolUse의 Bash 입력을 검사하는 연습용 훅이다.
 payload=$(cat)
 if ! cmd=$(printf '%s' "$payload" |
-  jq -er '.tool_input.command | select(type == "string")'); then
+  jq -ers '
+    select(length == 1) | .[0] | select(type == "object")
+    | .tool_input | select(type == "object")
+    | .command | select(type == "string")
+    | select(explode | index(0) == null)
+  '); then
   echo '훅 입력을 읽지 못해 호출을 차단한다.' >&2
   exit 2
 fi
 
 deny() {
   local log="${CLAUDE_PROJECT_DIR:-$PWD}/derived/guard-denials.jsonl"
-  if ! printf '%s' "$payload" | jq -c --arg at "$(date -u +%FT%TZ)" '
+  local at
+  if ! at=$(date -u +%FT%TZ); then
+    echo '기록 시각을 읽지 못해 차단 기록을 생략한다. 호출 차단은 유지한다.' >&2
+  elif ! printf '%s' "$payload" | jq -c --arg at "$at" '
     {at:$at, session_id, tool_use_id, tool_name,
      reason:"evidence write pattern", command:.tool_input.command}
   ' >> "$log"; then

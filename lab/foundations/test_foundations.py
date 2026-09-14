@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -71,6 +72,8 @@ class FoundationsTest(unittest.TestCase):
         invalid.write_text('{"id":"X","ts":123}\n', encoding='utf-8')
         self.assertEqual(self.tool('to_utc.py', str(invalid)).returncode, 2)
 
+    @unittest.skipUnless(all(shutil.which(name) for name in ('bash', 'grep', 'sed')),
+                         'Bash, grep and sed are required for the shell checks')
     def test_grep_boundaries_statuses_and_pipeline(self):
         path = str(self.work / 'raw/pattern-samples.txt')
         for options, count in [('-c', '4\n'), ('-Fc', '3\n'), ('-Fxc', '2\n')]:
@@ -81,10 +84,11 @@ class FoundationsTest(unittest.TestCase):
         self.assertGreater(self.command(['grep', '-Fx', 'x', missing]).returncode, 1)
         for option, expected in [('+o', 0), ('-o', 2)]:
             program = 'set ' + option + ' pipefail; grep x "$1" | sed -n 1p'
-            result = self.command(['/bin/bash', '--noprofile', '--norc', '-c',
+            result = self.command([shutil.which('bash'), '--noprofile', '--norc', '-c',
                                    program, 'test-pipeline', missing])
             self.assertEqual(result.returncode, expected)
 
+    @unittest.skipUnless(shutil.which('jq'), 'jq is required for the JSON filter checks')
     def test_json_types_empty_input_and_partial_output(self):
         result = self.jq('select(.status == 200) | .id', 'raw/events.jsonl', '-r')
         self.assertEqual(result.stdout, 'a2\na3\na6\n')

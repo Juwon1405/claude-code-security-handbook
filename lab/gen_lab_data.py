@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """핸드북 실습용 합성 보안 데이터 생성기.
 
-실제 침해사고 증거는 쓰지 않는다. 전부 여기서 만든 가짜다. 시드를 고정해 두어
-누가 언제 돌려도 같은 데이터가 나오고, 따라서 책의 실습 정답도 그대로 맞는다.
+실제 침해사고 증거는 쓰지 않는다. 시드와 생성기를 고정한 합성 자료이며,
+UTF-8·LF로 저장한다. 생성 후 파일별 해시를 책의 대조값과 비교한다.
 
 주소는 문서용으로 예약된 대역만 쓴다 (RFC 5737: 192.0.2.0/24, 198.51.100.0/24,
-203.0.113.0/24 / RFC 2606: example.com). 실제 인터넷 자산을 가리키지 않는다.
+203.0.113.0/24 / RFC 2606: example.com·example.net·example.org).
+문서용 예약은 도메인의 비존재를 뜻하지 않으므로 외부 조회·접속에 사용하지 않는다.
 
     python3 gen_lab_data.py ~/handbook-lab/evidence
 
@@ -19,9 +20,8 @@
   Zeek         epoch (UTC)
 
 **표기가 갈리는 것은 일부러 심은 것이다.** 실제 사고에서 제일 자주 사람을 헷갈리게
-하는 지점이다. 웹셸 첫 접근은 UTC 17:10이고, 윈도우 셸 실행 18:24
-보다 약 1시간 13분 앞선다. 변환 없이 숫자만 비교하면 약 7시간 46분 차이로,
-게다가 순서까지 뒤집혀 잘못 읽는다.
+하는 지점이다. 웹셸 경로 첫 접근은 UTC 17:10:43이고, 윈도우 셸 실행 18:24
+보다 약 1시간 13분 앞선다. 변환 없이 숫자만 비교하면 순서가 뒤집힌다.
 """
 import hashlib
 import json
@@ -92,8 +92,14 @@ def clf(t):
     return t.astimezone(KST).strftime("%d/%b/%Y:%H:%M:%S %z")
 
 
+def write_utf8(p: pathlib.Path, text: str):
+    """운영체제의 줄바꿈 변환 없이 저장하며 기존 파일은 덮어쓰지 않는다."""
+    with p.open("xb") as stream:
+        stream.write(text.encode("utf-8"))
+
+
 def write(p: pathlib.Path, lines, note):
-    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_utf8(p, "\n".join(lines) + "\n")
     b = p.read_bytes()
     sha = hashlib.sha256(b).hexdigest()
     MANIFEST.append((p.name, len(lines), len(b), sha, note))
@@ -169,12 +175,17 @@ def gen_access(out):
 
 
 # ── 2. SSH 인증 로그 ────────────────────────────────────────────────────────
+def syslog_time(t):
+    # %e 지원 여부에 의존하지 않도록 날짜의 공백 채움을 직접 한다.
+    return f"{t:%b} {t.day:2d} {t:%H:%M:%S}"
+
+
 def gen_auth(out):
     rows, host = [], "web-front-01"
     t = T["recon_start"] - timedelta(hours=16)
     for _ in range(1480):
         t += timedelta(seconds=random.randint(20, 300))
-        rows.append(f"{t.strftime('%b %e %H:%M:%S')} {host} sshd[{random.randint(1000, 99999)}]: "
+        rows.append(f"{syslog_time(t)} {host} sshd[{random.randint(1000, 99999)}]: "
                     f"Accepted publickey for {random.choice(['deploy', 'monitor', 'yuna', 'kenji'])} "
                     f"from {random.choice(INTERNAL)} port {random.randint(40000, 65000)} ssh2: "
                     f"RSA SHA256:{''.join(random.choices('ABCDEFabcdef0123456789+/', k=43))}")
@@ -184,19 +195,19 @@ def gen_auth(out):
     for i in range(220):
         b = T["brute_start"] + timedelta(seconds=span * i / 220)
         u = random.choice(["root", "admin", "deploy", "svc_backup"])
-        rows.append(f"{b.strftime('%b %e %H:%M:%S')} {host} sshd[{random.randint(1000, 99999)}]: "
+        rows.append(f"{syslog_time(b)} {host} sshd[{random.randint(1000, 99999)}]: "
                     f"Failed password for {u} from {ATTACKER} "
                     f"port {random.randint(40000, 65000)} ssh2")
     ok = T["brute_ok"]
-    rows.append(f"{ok.strftime('%b %e %H:%M:%S')} {host} sshd[41822]: Accepted password for "
+    rows.append(f"{syslog_time(ok)} {host} sshd[41822]: Accepted password for "
                 f"svc_backup from {ATTACKER} port 51204 ssh2")
-    rows.append(f"{(ok + timedelta(seconds=3)).strftime('%b %e %H:%M:%S')} {host} sshd[41822]: "
+    rows.append(f"{syslog_time(ok + timedelta(seconds=3))} {host} sshd[41822]: "
                 f"pam_unix(sshd:session): session opened for user svc_backup by (uid=0)")
     c = ok
     for cmd in ["/usr/bin/id", "/bin/cat /etc/shadow", "/usr/bin/find / -name id_rsa",
                 "/usr/bin/crontab -l"]:
         c += timedelta(seconds=random.randint(20, 120))
-        rows.append(f"{c.strftime('%b %e %H:%M:%S')} {host} sudo: svc_backup : TTY=pts/1 ; "
+        rows.append(f"{syslog_time(c)} {host} sudo: svc_backup : TTY=pts/1 ; "
                     f"PWD=/home/svc_backup ; USER=root ; COMMAND={cmd}")
     write(out / "auth.log", rows,
           "Failed 220 → Accepted svc_backup 1 → sudo 4. syslog 라 타임존 표기가 없다(UTC)")
@@ -395,7 +406,7 @@ def gen_processes(out):
 # ── 6. 의심 스크립트 (무해) ─────────────────────────────────────────────────
 def gen_script(out):
     p = out / "suspicious.ps1"
-    p.write_text(f"""# ─────────────────────────────────────────────────────────────
+    write_utf8(p, f"""# ─────────────────────────────────────────────────────────────
 # 실습용 무해 샘플. 난독화 '형태'만 흉내낸 것으로 악성 동작은 없다.
 # 다운로드·실행·네트워크 호출은 한 줄도 들어 있지 않다.
 # 정적으로 읽고 디코드하는 연습에만 쓴다.
@@ -407,7 +418,7 @@ ${{c`m`d}} = [Text.Encoding]::Unicode.GetString(
     [Convert]::FromBase64String('{ENC_B64}'))
 
 # 2) URL 처럼 보이는 문자열. 변수에 담기만 하고 호출하지 않는다.
-#    도메인은 문서용 예약 대역이라 실제로 존재하지 않는다.
+#    문서용 예약 도메인이다. 실제 존재 여부와 무관하게 접속하지 않는다.
 $u = 'aHR0cHM6Ly91cGRhdGVzLmV4YW1wbGUubmV0L3AudHh0'
 $d = [Text.Encoding]::ASCII.GetString([Convert]::FromBase64String($u))
 
@@ -423,7 +434,7 @@ Write-Output "service-name: $svc"
 Write-Output "assembled   : $t"
 
 # 이 아래에 원래라면 다운로드와 실행이 붙는다. 의도적으로 넣지 않았다.
-""", encoding="utf-8")
+""")
     b = p.read_bytes()
     n = len(p.read_text(encoding="utf-8").splitlines())
     MANIFEST.append((p.name, n, len(b), hashlib.sha256(b).hexdigest(),
@@ -466,18 +477,16 @@ def gen_untrusted(out):
             '            "command": "echo \\"hook ran at $(date -u +%FT%TZ)\\" '
             '>> \\"$CLAUDE_PROJECT_DIR/../../derived/marker.txt\\""\n'
             '          }\n        ]\n      }\n    ]\n  }\n}\n')
-    (d / ".claude" / "settings.json").write_text(hook, encoding="utf-8")
-    (d / "README.txt").write_text(
+    write_utf8(d / ".claude" / "settings.json", hook)
+    write_utf8(d / "README.txt",
         "조사 대상을 흉내 낸 폴더다. 이 안의 .claude/settings.json 에는 훅이 하나 걸려 있다.\n"
         "그 훅은 marker 파일에 실행 시각 한 줄을 붙이는 것이 전부고, 파괴·네트워크 동작은 없다.\n"
-        "비대화형 세션이 대상 폴더의 설정을 어떻게 취급하는지 자기 랩에서 확인하기 위한 장치다.\n",
-        encoding="utf-8")
-    (d / "notes.md").write_text("# 대상 폴더 메모\n\n분석 대상처럼 보이게 둔 평범한 파일이다.\n",
-                                encoding="utf-8")
-    for f in sorted(d.rglob("*")):
+        "비대화형 세션이 대상 폴더의 설정을 어떻게 취급하는지 자기 랩에서 확인하기 위한 장치다.\n")
+    write_utf8(d / "notes.md", "# 대상 폴더 메모\n\n분석 대상처럼 보이게 둔 평범한 파일이다.\n")
+    for f in sorted(d.rglob("*"), key=lambda p: p.relative_to(out).as_posix()):
         if f.is_file():
             b = f.read_bytes()
-            MANIFEST.append((str(f.relative_to(out)), len(b.splitlines()), len(b),
+            MANIFEST.append((f.relative_to(out).as_posix(), len(b.splitlines()), len(b),
                              hashlib.sha256(b).hexdigest(), "9장 — 무해한 PreToolUse 훅 실습용"))
     print(f"  untrusted-sample/      파일 3개 — 무해한 PreToolUse 훅(마커에 한 줄 append)")
 
@@ -486,7 +495,7 @@ def gen_derived(out):
     d = out.parent / "derived"
     d.mkdir(parents=True, exist_ok=True)
     p = d / "marker.txt"
-    p.write_text("baseline\n", encoding="utf-8")
+    write_utf8(p, "baseline\n")
     b = p.read_bytes()
     MANIFEST.append(("../derived/marker.txt", 1, len(b), hashlib.sha256(b).hexdigest(),
                      "14장 훅 차단 실습 대상. 증거 원본이 아닌 파생 폴더의 마커"))
@@ -506,15 +515,28 @@ def write_manifest(out):
     # "여기에 웹셸이 있다" 를 그대로 베낀다 — 실습이 성립하지 않는다. 실제로 그렇게
     # 만들었다가 모델이 매니페스트를 읽고 답을 맞히는 것을 보고 밖으로 뺐다.
     p = out.parent / "lab-manifest.txt"
-    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_utf8(p, "\n".join(lines) + "\n")
     print(f"\n  ../lab-manifest.txt    {len(MANIFEST)}개 항목 — 정답 대조 기준표")
     print("     (증거 폴더 밖에 둔다. 안에 두면 조사 세션이 정답을 먼저 읽는다)")
     return p
 
 
 def main():
+    # Windows에서 파이프로 실행해도 한글 안내를 UTF-8로 출력한다.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
+    if len(sys.argv) > 2:
+        raise SystemExit("사용법: python3 gen_lab_data.py 새_증거_폴더")
     out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "./evidence").expanduser()
-    out.mkdir(parents=True, exist_ok=True)
+    # 생성 도중 실패해도 기존 증거·훅 기록·매니페스트는 보존한다.
+    for target in (out, out.parent / "derived" / "marker.txt", out.parent / "lab-manifest.txt"):
+        if target.exists() or target.is_symlink():
+            raise SystemExit("기존 자료가 있다. 덮어쓰지 않고 새 실습 폴더를 사용한다.")
+    derived = out.parent / "derived"
+    if derived.is_symlink() or (derived.exists() and not derived.is_dir()):
+        raise SystemExit("derived가 일반 폴더가 아니다. 새 실습 폴더를 사용한다.")
+    out.mkdir(parents=True, exist_ok=False)
     print(f"합성 실습 데이터 생성 (seed={SEED}) → {out}\n")
     gen_access(out)
     gen_auth(out)
@@ -526,7 +548,7 @@ def main():
     gen_untrusted(out)
     gen_derived(out)
     write_manifest(out)
-    print("\n주소는 RFC 5737/2606 문서용 예약 대역만 사용. 실제 자산을 가리키지 않는다.")
+    print("\n주소·도메인은 문서용 예약 값이다. 외부 조회·접속에 사용하지 않는다.")
     print("시각은 UTC 한 줄로 세우고 로그마다 그 로그의 표기로 렌더한다 —")
     print("access.log 는 +0900, winlog/Zeek 는 UTC. 표기가 갈리는 것은 일부러 심은 것이다.")
 

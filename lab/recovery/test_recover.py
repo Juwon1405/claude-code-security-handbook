@@ -21,7 +21,7 @@ class RecoveryTests(unittest.TestCase):
 
     def change(self, name, **changes):
         path = self.folder / name
-        value = json.loads(path.read_text())
+        value = json.loads(path.read_text(encoding="utf-8"))
         value.update(changes)
         path.write_text(json.dumps(value), encoding="utf-8")
 
@@ -61,7 +61,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(self.state(), "invalid_record")
 
     def test_boolean_line_rejected(self):
-        obj = json.loads((self.folder / "response.json").read_text())
+        obj = json.loads((self.folder / "response.json").read_text(encoding="utf-8"))
         obj["structured_output"]["line"] = True
         self.change("response.json", structured_output=obj["structured_output"])
         self.assertEqual(self.state(), "invalid_response")
@@ -82,14 +82,14 @@ class RecoveryTests(unittest.TestCase):
                 self.assertEqual(self.state(), "invalid_json")
 
     def test_multiline_quote_rejected(self):
-        obj = json.loads((self.folder / "response.json").read_text())
+        obj = json.loads((self.folder / "response.json").read_text(encoding="utf-8"))
         obj["structured_output"]["quote"] += "\nextra"
         self.change("response.json", structured_output=obj["structured_output"])
         self.assertEqual(self.state(), "quote_mismatch")
 
     def test_path_manifest_rejected(self):
         path = self.root / "input-manifest.json"
-        obj = json.loads(path.read_text())
+        obj = json.loads(path.read_text(encoding="utf-8"))
         obj["source"] = "../elsewhere.jsonl"
         path.write_text(json.dumps(obj), encoding="utf-8")
         with self.assertRaises(ValueError):
@@ -99,7 +99,12 @@ class RecoveryTests(unittest.TestCase):
         path = self.folder / "response.json"
         saved = self.folder / "response-saved.json"
         path.rename(saved)
-        path.symlink_to(saved.name)
+        try:
+            path.symlink_to(saved.name)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("Windows user lacks the privilege to create a symbolic link")
+            raise
         self.assertEqual(self.state(), "invalid_json")
 
     def test_extra_attempt_not_silently_ignored(self):
@@ -108,7 +113,7 @@ class RecoveryTests(unittest.TestCase):
             recover.audit(self.root)
 
     def test_semantic_overclaim_is_not_validated(self):
-        obj = json.loads((self.folder / "response.json").read_text())
+        obj = json.loads((self.folder / "response.json").read_text(encoding="utf-8"))
         obj["structured_output"]["statement"] = "실제 계정 주인이 확인되었다."
         self.change("response.json", structured_output=obj["structured_output"])
         self.assertEqual(self.state(), "ready_for_review")
