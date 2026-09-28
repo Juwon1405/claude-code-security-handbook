@@ -8,6 +8,8 @@ Claude Code 실무 핸드북 · 방주원
 
 ## 실습 시작하기
 
+현재 출판 검토 원고 **v1.5**에 대응하는 실습 자료는 **v0.2.1**입니다. 원고와 실습 자료는 별도로 버전을 관리합니다.
+
 1. [v0.2.1 다운로드](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)에서 **handbook-lab-files.zip**을 받습니다. 자동 생성된 Source code ZIP과는 다른 파일입니다.
 2. [설치 안내](lab/README.md#처음-설치하기)에 따라 새 실습 폴더를 만들고 파일의 체크섬을 확인합니다.
 3. 합성 데이터를 생성한 뒤 책의 해당 장을 따라갑니다.
