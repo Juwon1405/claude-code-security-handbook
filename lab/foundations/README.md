@@ -11,11 +11,22 @@ Python 3.9.6·3.14.5와 jq 1.7.1·1.8.1로 본문 명령과 출력을 확인했�
 grep·sed·wc는 운영체제의 명령을 사용한다.
 다른 버전에서는 출력과 종료 상태를 비교하고, 차이가 있으면 버전을 함께 기록한다.
 
-실습 묶음을 푼 폴더에서 Bash에 들어간 뒤
-`python3 foundations/generate.py foundation-work`를 실행한다. 생성기는 이미 있는
-디렉터리를 덮어쓰지 않는다. 생성이 끝나면 `cd foundation-work`로 이동하여
-부록 C를 따라 한다. `raw/`는 입력, `out/`은 결과, `input-sha256.json`은 입력의
-SHA-256 목록이다. 실제 사건 파일이 있는 폴더에서는 실행하지 않는다.
+실습 묶음을 책의 설치 안내대로 `~/handbook-lab`에 준비한 뒤
+`bash --noprofile --norc`로 Bash에 들어간다. 다른 위치에 설치했다면 아래 `cd`의
+경로를 해당 폴더로 바꾼다.
+
+```bash
+cd ~/handbook-lab &&
+python3 foundations/generate.py foundation-work &&
+cd foundation-work
+```
+
+세 줄은 `&&`로 이어진 한 명령이므로 앞 단계가 성공해야 다음 단계로 넘어간다.
+`~/handbook-lab`이 없으면 생성하지 않고, 생성에 실패하면 새 작업 폴더로 이동하지 않는다.
+생성기는 이미 있는 디렉터리를 덮어쓰지 않으므로, 오류가 나면 원인을 확인한 뒤 다시 진행한다. 생성이 끝나면
+`foundation-work` 안에서 부록 C를 따라 한다. `raw/`는 입력, `out/`은 결과,
+`input-sha256.json`은 입력의 SHA-256 목록이다. 실제 사건 파일이 있는 폴더에서는
+실행하지 않는다.
 
 ## 지원 프로그램
 
@@ -29,8 +40,9 @@ SHA-256 목록이다. 실제 사건 파일이 있는 폴더에서는 실행하�
 - `to_utc.py`: 명시적 오프셋이 있는 연습용 ISO 8601 시각을 UTC로 변환해 정렬한다.
   시간대가 없으면 2로 끝나며, 로컬 시간대를 추정하지 않는다.
 
-- `test_foundations.py`: `python3 foundations/test_foundations.py`로 독립 시험을
-  실행한다. 새 임시 디렉터리에만 자료를 만들며 종료 시 그 임시 자료를 정리한다.
+- `test_foundations.py`: `cd ~/handbook-lab && python3 foundations/test_foundations.py`로
+  실습 묶음의 루트에서 독립 시험을 실행한다. 다른 위치에 설치했다면 `cd` 경로를 바꾼다.
+  새 임시 디렉터리에만 자료를 만들며 종료 시 그 임시 자료를 정리한다.
 
 ## 입력 범위
 

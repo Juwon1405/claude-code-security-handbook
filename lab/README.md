@@ -1,6 +1,6 @@
 # 『터미널에서 시작하는 보안 분석 — Claude Code 실무 핸드북』 실습 파일
 
-> Lab bundle v0.3.2 accompanies manuscript v1.9. Its exercise files are byte-identical to v0.3.1 used with manuscripts v1.7 and v1.8; only this README and its checksum changed. Chapter 15 examples remain under `examples/ch15/` until that chapter. Do not mix this layout with v0.2.1.
+> Lab bundle v0.3.3. Use the lab release specified in the book's environment guide or Appendix A; manuscript and lab bundle version numbers are independent. Chapter 15 examples remain under `examples/ch15/` until that chapter. Do not mix this layout with v0.2.1.
 
 이 묶음은 책에서 사용하는 합성 실습 환경을 준비하기 위한 자료입니다. 실제 사건 증거와 운영 계정 정보는 포함하지 않습니다. 1~16장의 증거 8종은 생성기를 실행해 만들며, 아래 표의 행수·바이트·체크섬과 대조합니다. 17~19장과 부록 C의 별도 입력은 각 지원 폴더에서 생성합니다. 입력 데이터가 같아도 모델의 표현과 도구 선택은 실행마다 달라질 수 있습니다.
 
@@ -8,7 +8,9 @@
 
 실습 소스와 사용 안내는 [공개 저장소](https://github.com/juwon1405/claude-code-security-handbook)에서 확인합니다.
 
-Download **handbook-lab-files-v0.3.2.zip** from the [v0.3.2 release](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.3.2). Check the manuscript version before using files from another release. The instructions below are the Korean reader guide.
+Download **handbook-lab-files-v0.3.3.zip** from the [v0.3.3 release](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.3.3) when the book specifies this release. Do not substitute the latest release without checking the book's instructions.
+
+The instructions below are the Korean reader guide.
 
 GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다르므로 아래 설치 명령에는 사용하지 않습니다. 정정 의견은 저장소의 [Issues](https://github.com/juwon1405/claude-code-security-handbook/issues)에 남길 수 있으며, 실제 사건 자료나 계정 정보는 올리지 않습니다.
 
@@ -33,7 +35,7 @@ GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다�
     exit 1
   fi
   mkdir ~/handbook-lab
-  unzip ~/Downloads/handbook-lab-files-v0.3.2.zip -d ~/handbook-lab
+  unzip ~/Downloads/handbook-lab-files-v0.3.3.zip -d ~/handbook-lab
   cd ~/handbook-lab
   shasum -a 256 -c SHA256SUMS.txt
   python3 gen_lab_data.py ~/handbook-lab/evidence
