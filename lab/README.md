@@ -1,19 +1,21 @@
 # 『터미널에서 시작하는 보안 분석 — Claude Code 실무 핸드북』 실습 파일
 
+> Lab bundle v0.3.2 accompanies manuscript v1.9. Its exercise files are byte-identical to v0.3.1 used with manuscripts v1.7 and v1.8; only this README and its checksum changed. Chapter 15 examples remain under `examples/ch15/` until that chapter. Do not mix this layout with v0.2.1.
+
 이 묶음은 책에서 사용하는 합성 실습 환경을 준비하기 위한 자료입니다. 실제 사건 증거와 운영 계정 정보는 포함하지 않습니다. 1~16장의 증거 8종은 생성기를 실행해 만들며, 아래 표의 행수·바이트·체크섬과 대조합니다. 17~19장과 부록 C의 별도 입력은 각 지원 폴더에서 생성합니다. 입력 데이터가 같아도 모델의 표현과 도구 선택은 실행마다 달라질 수 있습니다.
 
 ## 자료와 정정 안내
 
 실습 소스와 사용 안내는 [공개 저장소](https://github.com/juwon1405/claude-code-security-handbook)에서 확인합니다.
 
-이 원고에 대응하는 묶음은 [v0.2.1 배포 페이지](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)의 `handbook-lab-files.zip`입니다. 출판 검토 원고에 대응하는 사전 공개판이며, 이후 판본은 각 배포 설명에서 적용 범위를 확인합니다.
+Download **handbook-lab-files-v0.3.2.zip** from the [v0.3.2 release](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.3.2). Check the manuscript version before using files from another release. The instructions below are the Korean reader guide.
 
-GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다르므로 아래 설치 명령에는 사용하지 않습니다. 배포 파일 이름이 `handbook-lab-files.zip`인지 확인합니다. 정정 의견은 저장소의 [Issues](https://github.com/juwon1405/claude-code-security-handbook/issues)에 남길 수 있으며, 실제 사건 자료나 계정 정보는 올리지 않습니다.
+GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다르므로 아래 설치 명령에는 사용하지 않습니다. 정정 의견은 저장소의 [Issues](https://github.com/juwon1405/claude-code-security-handbook/issues)에 남길 수 있으며, 실제 사건 자료나 계정 정보는 올리지 않습니다.
 
 ## 기준 환경
 
-- macOS Apple Silicon에서 확인했습니다. 셸 예제는 bash·zsh 기준입니다. fish에서는 bash를 연 뒤 실행합니다.
-- 주요 화면은 Claude Code 2.1.222에서 수집했으며 일부 인증 화면은 2.1.185입니다. 본문은 2.1.261 문서 대조와 2.1.263 실습 재확인 결과를 반영합니다. 화면과 현재 버전의 차이는 책 부록 A에서 확인합니다.
+- macOS Apple Silicon에서 확인했습니다. 셸 예제는 bash·zsh 기준입니다. fish에서는 bash를 연 뒤 실행합니다. macOS의 zsh에서는 터미널을 열 때마다 `setopt interactivecomments`를 먼저 입력해, 명령에 붙은 `#` 주석이 명령으로 해석되지 않게 합니다.
+- 주요 화면은 Claude Code 2.1.222에서 수집했으며 일부 인증 화면은 2.1.185입니다. 본문은 2.1.261 문서 대조와 2.1.263 실습 재확인, 2.1.270의 macOS·Ubuntu 주요 기능별 시험 결과를 반영합니다. 화면과 현재 버전의 차이는 책 부록 A에서 확인합니다.
 - 생성기는 Python 3 표준 라이브러리만 사용합니다. macOS·Ubuntu·Windows ARM64에서 UTF-8·LF로 생성되는지 확인했으며, 같은 묶음의 파일별 체크섬으로 결과를 대조합니다.
 - jq, shasum과 기본 셸 도구가 필요합니다. 8장의 구조 검증에는 jsonschema를 추가로 설치합니다.
 - Windows 독자는 부록 D의 WSL2·Ubuntu 준비 절차에서 시작합니다. 준비 뒤에는 Ubuntu 터미널에서 본문 명령을 이어갑니다. Windows ARM64에서 확인한 범위는 Python 합성 데이터와 실행 조건을 갖춘 오프라인 시험이며, WSL2의 전체 실습과 네이티브 Windows의 Bash 샌드박스까지 확인한 것은 아닙니다.
@@ -31,7 +33,7 @@ GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다�
     exit 1
   fi
   mkdir ~/handbook-lab
-  unzip ~/Downloads/handbook-lab-files.zip -d ~/handbook-lab
+  unzip ~/Downloads/handbook-lab-files-v0.3.2.zip -d ~/handbook-lab
   cd ~/handbook-lab
   shasum -a 256 -c SHA256SUMS.txt
   python3 gen_lab_data.py ~/handbook-lab/evidence
@@ -101,25 +103,26 @@ shasum -a 256 evidence/*.log evidence/*.jsonl evidence/*.csv \
 | 파일 | 사용하는 장 | 역할 |
 |---|---|---|
 | `gen_lab_data.py` | 3장 | 합성 증거 8종 생성기, 시드 20260901 |
-| `.claude/settings.json` | 4장 | 4장의 출발 설정이다. 증거 읽기와 지정한 셸 명령을 허용하고 비밀 파일 읽기와 일부 명령을 거부한다. 목록에 없는 쓰기에는 추가 승인이 필요할 수 있으므로, 이 파일만으로 증거 쓰기가 차단됐다고 보지 않는다. |
+| `.claude/settings.json` | 4장 | 4장의 출발 설정이다. 증거 읽기와 지정한 셸 명령을 허용하고 비밀 파일 읽기와 일부 명령을 거부한다. 목록에 없는 쓰기에는 추가 승인이 필요할 수 있다. 이 파일만으로 증거 쓰기 차단을 보장하지 않는다. |
 | `settings.hardened.json` | 13장 | 13장의 강화 설정이다. 증거 경로 편집과 비밀 파일 읽기를 제한하고, 일부 외부 조회 도구를 제외한다. 샌드박스가 적용되지 않으면 실행을 중단하도록 설정하며, 사용 전 실제 허용·거부 동작을 시험한다. |
 | `triage-rules.txt` | 6장 | 판정 기준과 인용 방식을 전달하는 파일이다. --append-system-prompt-file 로 지정해 사용하며, 지침이 포함됐더라도 실제 인용과 자산 분류가 맞는지는 응답마다 확인한다. |
 | `untrusted-rules.txt` | 9장 | 신뢰하지 않는 자료를 데이터로 취급하고 그 안의 지시를 따르지 않도록 안내한다. 지침만으로 실행을 막을 수는 없으므로 9장의 도구 제한과 설정 제외를 함께 적용한다. |
-| `bin/structured-rules.txt` | 8장 | 8장의 구조화 출력 전용 규약이다. evidence_line에는 로그 원문만 넣고 파일명 등 출처는 reason에 적도록 안내한다. 형식을 만족한 응답도 실제 원문과 자산 분류를 별도로 확인한다. |
+| `bin/structured-rules.txt` | 8장 | 8장에서 구조화된 응답을 요청할 때 사용하는 지침이다. evidence_line에는 로그 원문만 넣고 파일명 등 출처는 reason에 적도록 안내한다. 형식을 만족한 응답도 실제 원문과 자산 분류를 별도로 확인한다. |
 | `ioc-rules.txt` | 9장 | IOC의 방어형 표기 해제, 중복 병합, 유형 분류, 해시 소문자화와 자산 구분을 안내한다. 정규화한 결과는 원문과 대조하며, 자산 여부가 확인되지 않은 주소를 자동 차단에 사용하지 않는다. |
 | `bin/verdict.schema.json` | 8장 | 다섯 필드로 구성된 판정 형식을 정의한다. --json-schema 로 전달하며, 반환 객체가 스키마를 만족하는지와 판정 내용이 근거에 부합하는지는 별도로 검사한다. |
 | `bin/validate_verdict.py` | 8장 | 응답 JSON의 정상 상태와 판정 스키마를 검사하고, 줄바꿈·NUL이 없는 인용을 원본 로그의 한 줄과 직접 대조한다. 일치한 파일·행 번호를 출력하며 판정의 타당성은 별도 검토한다. |
-| `bin/alerts.txt` | 8장 | 배치에 넣는 입력 파일로 한 줄에 알림 하나가 들어가며, 8장의 루프가 이 파일을 줄 단위로 돈다. |
-| `alerts/a1-webshell.log` | 7장 | 트리아지 루프의 입력이며 파일 하나에 알림 하나가 들어간다. 7장 루프는 alerts/*.log 를 파일 단위로 돈다. |
+| `bin/alerts.txt` | 8장 | 배치 입력 파일이다. 한 줄에 알림 하나를 적으며, 8장의 루프는 각 줄을 차례로 처리한다. |
+| `alerts/a1-webshell.log` | 7장 | 트리아지 루프의 입력이며 파일 하나에 알림 하나가 들어간다. 7장의 루프는 alerts/*.log에 해당하는 파일을 하나씩 처리한다. |
 | `alerts/a2-404-burst.log` | 7장 | 두 번째 알림 파일이며 위와 같은 폴더에 둔다. |
 | `bin/guard.sh` | 14장 | PreToolUse에 연결하는 문자열 검사 예제다. 입력 오류와 일치하는 쓰기 표현을 exit 2로 거부하고, 패턴에 걸린 호출의 ID·명령을 별도 JSONL에 기록한다. 모든 셸 표현을 해석하지는 않으므로 읽기 전용 경계와 함께 사용한다. |
 | `bin/audit.sh` | 14장 | PostToolUse에서 성공한 도구 호출의 이름과 UTC 시각을 기록한다. 입력 오류나 기록 실패는 오류로 알리지만 이미 끝난 호출을 되돌리지는 못한다. 차단된 시도나 명령 전체를 포함하는 기록은 아니다. |
 | `no-hook.settings.json` | 14장 | 훅을 달기 전의 비교 설정이다. 지정한 셸 명령과 임시 시험 파일의 쓰기를 허용하므로 14장의 격리된 실습 폴더에서만 사용한다. |
 | `hooked.settings.json` | 14장 | 비교 설정과 같은 권한·샌드박스에 차단·감사 훅만 더한 설정이다. guard.sh와 audit.sh를 모두 준비한 뒤 임시 복제본에서 사용한다. |
-| `CLAUDE.md` | 15장 | 케이스의 공통 지침을 담는다. 증거 보호 원칙, 원문 인용과 UTC 표기를 반복해서 전달하는 용도이며 파일 접근을 강제하는 설정은 아니다. |
-| `.claude/skills/triage-line/SKILL.md` | 15장 | 알림을 근거와 대조해 판정 JSON을 반환하는 스킬이다. 자산 분류와 악성 판단을 구분하며, 호출 뒤에는 JSON 형식과 실제 근거를 함께 검증한다. |
-| `.claude/agents/log-reader.md` | 15장 | 별도 컨텍스트에서 필요한 로그를 조회하는 서브에이전트다. 읽기와 검색 도구만 허용하며, 반환한 원문과 본 세션의 컨텍스트 증가량을 확인한다. |
+| `examples/ch15/CLAUDE.md` | 15장 | 케이스의 공통 지침 예시다. 15장에서 폴더 최상단의 CLAUDE.md로 복사한다. 원문 인용과 UTC 표기를 전달하는 문서이며 파일 접근을 강제하는 설정은 아니다. |
+| `examples/ch15/skills/triage-line/SKILL.md` | 15장 | 알림을 근거와 대조해 판정 JSON을 반환하는 스킬이다. 자산 분류와 악성 판단을 구분하며, 15장에서 .claude/skills/triage-line/SKILL.md로 복사한 뒤 호출과 근거를 검증한다. |
+| `examples/ch15/agents/log-reader.md` | 15장 | 별도 컨텍스트에서 필요한 로그를 조회하는 서브에이전트다. 읽기와 검색 도구만 허용하며, 15장에서 .claude/agents/log-reader.md로 복사한 뒤 원문과 컨텍스트 증가량을 확인한다. |
 | `test_safety.py` | 3·14장 | 기존 자료 보존·UTF-8/LF 재현과 차단·감사 훅의 오류 처리를 시험한다. |
+| `bin/triage-batch.sh` | 7장 | 알림 파일을 하나씩 호출하고 입력별 상태와 보고 비용을 집계하는 배치 스크립트다. 본문 7장의 코드와 같다. |
 | `case2/generate.py` | 17장 | 계정·파일·전송 기록 3종을 새 사건 폴더에 생성한다. |
 | `case2/analyze.py` | 17~18장 | 형식·중복·세션 구간을 검사하고 근거가 연결된 결과를 만든다. |
 | `case2/show.py` | 17~18장 | 입력 해시, 원문 인용, 집계와 타임라인을 조회한다. |
@@ -140,6 +143,10 @@ shasum -a 256 evidence/*.log evidence/*.jsonl evidence/*.csv \
 | `SHA256SUMS.txt` | — | 배포 파일의 전체 SHA-256 목록 |
 
 `.claude/settings.json`은 4장의 출발형입니다. 이 설정만으로 증거 쓰기가 모두 차단되지는 않습니다. 4장의 중간형과 13장의 `settings.hardened.json`을 비교하며 제한을 추가합니다.
+
+15장의 규칙·스킬·서브에이전트 예시는 `examples/ch15/`에 있습니다. 15장 전에는 이를 프로젝트 최상단의 `CLAUDE.md`, `.claude/skills/`, `.claude/agents/`로 복사하지 않습니다. 15장의 각 절에서 기존 파일을 덮어쓰지 않는 명령으로 하나씩 배치한 뒤 새 세션에서 읽힌 내용을 확인합니다. 개인 홈의 규칙이나 설정은 옮기거나 삭제하지 않습니다.
+
+`examples/`는 접근이 차단된 폴더가 아닙니다. 모델에 예시나 생성기·해설을 읽게 하면 아직 배우지 않은 지침이나 답이 분석에 영향을 줄 수 있습니다. 5장에서는 먼저 프로젝트 규칙의 배치 여부를 확인하고, 세션에서 실제로 읽힌 지침도 기록합니다.
 
 `no-hook.settings.json`과 `hooked.settings.json`은 14장의 임시 복제 실습에서 비교하는 설정입니다. 두 파일의 권한·샌드박스 설정은 같고, 후자에만 차단·감사 훅이 있습니다. 훅이 없는 설정으로 대조한 뒤 훅이 있는 설정의 동작을 확인합니다.
 
@@ -183,6 +190,7 @@ python3 test_safety.py
 
 | 증상 | 확인할 내용 |
 |---|---|
+| `zsh: command not found: #` | zsh가 주석을 명령으로 해석한 것입니다. `setopt interactivecomments`를 입력한 뒤 해당 블록의 결과를 확인하고 필요하면 다시 실행합니다. |
 | 배포 파일 체크섬 FAILED | 다른 판본과 섞였거나 파일이 변경되었는지 확인하고 묶음을 다시 대조합니다. |
 | 생성 데이터의 행수·해시 불일치 | 생성기와 출력 경로를 확인하고 새 임시 폴더의 결과와 비교합니다. |
 | 프로젝트가 신뢰되지 않았다는 안내 | 자신이 만든 실습 폴더인지 먼저 확인합니다. 9장의 신뢰·설정 출처 차이를 읽고 필요한 범위만 승인합니다. |

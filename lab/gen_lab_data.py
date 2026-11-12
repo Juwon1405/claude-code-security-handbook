@@ -64,10 +64,10 @@ T = {
 }
 
 INTERNAL = [f"192.0.2.{i}" for i in range(10, 60)]
-# 정상 클라이언트 풀은 넓게 잡는다. 좁으면 uniq -c 만으로 공격자가 눈에 띄어
-# "빈도로는 못 찾는다"는 이 책의 첫 교훈이 성립하지 않는다.
-# 198.51.100.147 은 일부러 남긴다 — 스캐너 198.51.100.14 를 grep 하면 같이 걸려서,
-# 경계 없는 문자열 매칭이 왜 위험한지 실습에서 직접 보게 된다.
+# Use a broad client pool so frequency alone does not identify the attacker.
+# Keep 198.51.100.140 through .149 to demonstrate unbounded string matching:
+# their 358 requests plus the scanner's 10 requests match 198.51.100.14,
+# producing 368 matches instead of the scanner's actual count of 10.
 NORMAL_CLIENTS = ([f"198.51.100.{i}" for i in range(20, 160)]
                   + [f"192.0.2.{i}" for i in range(60, 200)])
 UA_OK = [

@@ -1,23 +1,24 @@
-# 터미널에서 시작하는 보안 분석
+# Claude Code Security Analysis Handbook
 
-Claude Code 실무 핸드북 · 방주원
+Companion labs for **터미널에서 시작하는 보안 분석 — Claude Code 실무 핸드북** by Juwon Bang.
+Practice investigating synthetic logs, checking model claims against source evidence, and protecting investigation inputs.
 
-로그를 조사하고 AI의 답을 원문 증거와 대조하는 과정을 담은 책의 실습 저장소입니다.
+## Start the labs
 
-첫 책 [『보안 실무자를 위한 네트워크 공격 패킷 분석』](https://www.yes24.com/product/goods/83538369)에서 정상 통신을 이해하고 이상을 찾는 방법을 다뤘다면, 이번 책에서는 AI와 함께 분석하면서도 근거를 직접 확인하는 습관을 나눕니다.
+Manuscript **v1.9** uses lab bundle **v0.3.2**. Manuscript and lab versions are separate.
 
-## 실습 시작하기
+1. Download **handbook-lab-files-v0.3.2.zip** from the [v0.3.2 release](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.3.2), not GitHub's automatic Source code ZIP.
+2. Follow the [Korean setup guide](lab/README.md#처음-설치하기) in a new lab folder and verify the included checksums.
+3. Generate the synthetic data, then follow the chapters in order. Install the examples under `examples/ch15/` only when chapter 15 asks for them.
 
-현재 출판 검토 원고 **v1.5**에 대응하는 실습 자료는 **v0.2.1**입니다. 원고와 실습 자료는 별도로 버전을 관리합니다.
+The reference platform is Apple Silicon macOS. Selected offline exercises also run on Ubuntu ARM64. See the book's appendix D for Windows/WSL2 preparation and the release notes for verification limits.
 
-1. [v0.2.1 다운로드](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)에서 **handbook-lab-files.zip**을 받습니다. 자동 생성된 Source code ZIP과는 다른 파일입니다.
-2. [설치 안내](lab/README.md#처음-설치하기)에 따라 새 실습 폴더를 만들고 파일의 체크섬을 확인합니다.
-3. 합성 데이터를 생성한 뒤 책의 해당 장을 따라갑니다.
+For manuscripts v1.7–v1.8, v0.3.2 retains the same exercise files as the private v0.3.1 bundle; only the README and its checksum changed. For manuscript v1.5, use the preserved [v0.2.1 release](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.2.1).
 
-기준 환경은 Apple Silicon Mac입니다. Windows 독자를 위한 WSL2·Ubuntu 준비 방법은 부록 D에 담았습니다. 확인한 항목과 남은 실습은 [릴리스 안내](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.2.1)에 정리했습니다.
+## Author and feedback
 
-실제 업무 자료와 분리된 폴더에서 제공된 합성 데이터로 실습해 주세요.
+Juwon's earlier book, [보안 실무자를 위한 네트워크 공격 패킷 분석](https://www.yes24.com/product/goods/83538369), covers recognizing abnormal traffic through protocol analysis.
 
-[상세 실습 안내](lab/README.md) · [사용·공유 조건](lab/README.md#사용과-공유) · [문의·오류 제보](https://github.com/juwon1405/claude-code-security-handbook/issues)
+[Lab guide](lab/README.md) · [Use and sharing terms](lab/README.md#사용과-공유) · [Report an issue](https://github.com/Juwon1405/claude-code-security-handbook/issues)
 
-오류를 제보할 때에는 사용한 버전과 재현 절차를 알려 주세요. 실제 사건 자료와 계정 정보는 제외해 주세요.
+Use only the supplied synthetic data. Include the version, platform, chapter, and reproduction steps in an issue; do not upload incident evidence, account details, or credentials. The manuscript PDF and Word files are not distributed in this repository.
