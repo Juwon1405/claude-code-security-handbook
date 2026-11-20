@@ -1,23 +1,17 @@
 # 『터미널에서 시작하는 보안 분석 — Claude Code 실무 핸드북』 실습 파일
 
-> Lab bundle v0.3.3. Use the lab release specified in the book's environment guide or Appendix A; manuscript and lab bundle version numbers are independent. Chapter 15 examples remain under `examples/ch15/` until that chapter. Do not mix this layout with v0.2.1.
-
-이 묶음은 책에서 사용하는 합성 실습 환경을 준비하기 위한 자료입니다. 실제 사건 증거와 운영 계정 정보는 포함하지 않습니다. 1~16장의 증거 8종은 생성기를 실행해 만들며, 아래 표의 행수·바이트·체크섬과 대조합니다. 17~19장과 부록 C의 별도 입력은 각 지원 폴더에서 생성합니다. 입력 데이터가 같아도 모델의 표현과 도구 선택은 실행마다 달라질 수 있습니다.
+1~16장에서 사용할 합성 증거 8종은 설치할 때 생성합니다. 17~19장과 부록 C에서는 각 실습 폴더에서 별도의 입력을 만듭니다. 생성한 파일의 행 수·바이트·체크섬은 [생성 데이터 대조표](#생성-데이터-대조표)에서 확인하세요. 같은 자료를 사용해도 모델의 표현이나 도구 선택은 달라질 수 있습니다.
 
 ## 자료와 정정 안내
 
-실습 소스와 사용 안내는 [공개 저장소](https://github.com/juwon1405/claude-code-security-handbook)에서 확인합니다.
+[실습 파일 내려받기](https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.3/handbook-lab-files-v0.3.3.zip)를 눌러 `handbook-lab-files-v0.3.3.zip`을 받으세요. GitHub에서 자동으로 제공하는 소스 압축 파일(Source code)은 폴더 구성이 다릅니다.
 
-Download **handbook-lab-files-v0.3.3.zip** from the [v0.3.3 release](https://github.com/juwon1405/claude-code-security-handbook/releases/tag/v0.3.3) when the book specifies this release. Do not substitute the latest release without checking the book's instructions.
-
-The instructions below are the Korean reader guide.
-
-GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다르므로 아래 설치 명령에는 사용하지 않습니다. 정정 의견은 저장소의 [Issues](https://github.com/juwon1405/claude-code-security-handbook/issues)에 남길 수 있으며, 실제 사건 자료나 계정 정보는 올리지 않습니다.
+설치 순서는 아래 [처음 설치하기](#처음-설치하기)에 있습니다. 15장의 예제는 해당 장에서 안내할 때 `examples/ch15/`에서 복사합니다. 오류를 발견하면 [정정 제보(Issues)](https://github.com/Juwon1405/claude-code-security-handbook/issues)에 장·절과 확인한 내용을 남겨 주세요. 예시가 필요하면 합성 자료를 사용해 주세요.
 
 ## 기준 환경
 
 - macOS Apple Silicon에서 확인했습니다. 셸 예제는 bash·zsh 기준입니다. fish에서는 bash를 연 뒤 실행합니다. macOS의 zsh에서는 터미널을 열 때마다 `setopt interactivecomments`를 먼저 입력해, 명령에 붙은 `#` 주석이 명령으로 해석되지 않게 합니다.
-- 주요 화면은 Claude Code 2.1.222에서 수집했으며 일부 인증 화면은 2.1.185입니다. 본문은 2.1.261 문서 대조와 2.1.263 실습 재확인, 2.1.270의 macOS·Ubuntu 주요 기능별 시험 결과를 반영합니다. 화면과 현재 버전의 차이는 책 부록 A에서 확인합니다.
+- 책의 주요 화면은 Claude Code 2.1.222를 기준으로 하며 일부 인증 화면은 2.1.185에서 촬영했습니다. 설치한 버전에 따라 화면이 다르면 부록 A에서 해당 기능과 확인 범위를 살펴보세요.
 - 생성기는 Python 3 표준 라이브러리만 사용합니다. macOS·Ubuntu·Windows ARM64에서 UTF-8·LF로 생성되는지 확인했으며, 같은 묶음의 파일별 체크섬으로 결과를 대조합니다.
 - jq, shasum과 기본 셸 도구가 필요합니다. 8장의 구조 검증에는 jsonschema를 추가로 설치합니다.
 - Windows 독자는 부록 D의 WSL2·Ubuntu 준비 절차에서 시작합니다. 준비 뒤에는 Ubuntu 터미널에서 본문 명령을 이어갑니다. Windows ARM64에서 확인한 범위는 Python 합성 데이터와 실행 조건을 갖춘 오프라인 시험이며, WSL2의 전체 실습과 네이티브 Windows의 Bash 샌드박스까지 확인한 것은 아닙니다.
@@ -25,7 +19,9 @@ GitHub가 자동으로 제공하는 `Source code (zip)`은 폴더 구조가 다�
 
 ## 처음 설치하기
 
-기존 `~/handbook-lab`이 있다면 먼저 내용을 확인하고 별도 이름으로 보관합니다. 아래 블록은 기존 폴더가 있으면 중단하며 덮어쓰지 않습니다. 압축 파일의 위치가 다르면 그 경로만 바꿉니다.
+**Windows:** 책 부록 D의 순서에 따라 Windows 다운로드 폴더에 받은 ZIP을 WSL2의 Ubuntu로 복사하세요. Ubuntu의 홈 폴더에 압축을 풀고 체크섬을 확인한 뒤, 3장에서 합성 로그를 생성합니다.
+
+**macOS:** ZIP을 받은 뒤 터미널에서 아래 명령을 실행하세요. 명령이 실습 폴더를 만들고 압축을 풀므로 폴더를 미리 만들 필요가 없습니다. 같은 이름의 `~/handbook-lab`이 이미 있으면 명령이 멈춥니다. 내용을 확인해 다른 이름으로 보관한 뒤 다시 실행하세요. ZIP을 다른 위치에 저장했다면 `unzip` 명령의 파일 경로를 바꾸세요.
 
 ```bash
 (
@@ -158,18 +154,19 @@ shasum -a 256 evidence/*.log evidence/*.jsonl evidence/*.csv \
 
 ## 종합 사례와 작은 독립 실습
 
-17~18장의 `case2/`는 기존 8종과 다른 사건입니다. 먼저 `case2/README.md`와
-`case2/FORMAT.md`를 읽고 17장의 순서로 새 사건 폴더를 만듭니다. 인증·파일 접근·전송의
+17~18장의 `case2/`는 기존 8종과 다른 사건입니다. 먼저 [계정 접속과 파일 접근 실습](case2/README.md)과
+[입력·출력 명세](case2/FORMAT.md)를 읽고 17장의 순서로 새 사건 폴더를 만듭니다. 인증·파일 접근·전송의
 JSONL 3종을 생성하며 분석 결과는 증거 밖의 새 폴더에 저장합니다. 같은 이름의 계정과
 재사용된 세션, 이벤트 복제, 전송 상태와 미확인 바이트를 구분하는 연습입니다.
-`case2/INSTRUCTOR.md`는 독립 분석을 마친 뒤 참고할 사건 해설이므로 모델 입력과 섞지 않습니다.
+
+[사건 풀이와 검산](case2/INSTRUCTOR.md)은 독립 분석을 마친 뒤 참고할 해설이므로 모델 입력과 섞지 않습니다.
 
 19장의 `recovery/`는 실제 모델을 호출하지 않고 여섯 모의 실행 자료를 만듭니다.
 `ready_for_review`는 사람이 내용을 검토할 준비가 됐다는 뜻이며, 악성 여부나 조사 완료를
 판정하지 않습니다. 본문의 명령을 같은 Bash에서 순서대로 실행하고 준비·감사 실패 시 중단합니다.
 
 부록 C의 `foundations/`는 셸과 JSON을 연습하기 위한 별도 작은 입력 12개를 만듭니다.
-자세한 순서는 `foundations/README.md`에 있습니다. 부록 D의 `platform/preflight.py`는
+자세한 순서는 [로그 분석 기초 실습](foundations/README.md)에서 확인하세요. 부록 D의 `platform/preflight.py`는
 도구 유무와 정해진 지원 파일을 읽는 진단기이며, Windows 실습이나 실제 샌드박스 차단이
 검증됐다고 판정하지 않습니다.
 
