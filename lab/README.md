@@ -1,53 +1,58 @@
 # 『터미널에서 시작하는 보안 분석 — Claude Code 실무 핸드북』 실습 파일
 
-1~16장에서 사용할 합성 증거 8종은 설치할 때 생성합니다. 17~19장과 부록 C에서는 각 실습 폴더에서 별도의 입력을 만듭니다. 생성한 파일의 행 수·바이트·체크섬은 [생성 데이터 대조표](#생성-데이터-대조표)에서 확인하세요. 같은 자료를 사용해도 모델의 표현이나 도구 선택은 달라질 수 있습니다.
-
-## 자료와 정정 안내
-
-[실습 파일 내려받기](https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.3/handbook-lab-files-v0.3.3.zip)를 눌러 `handbook-lab-files-v0.3.3.zip`을 받으세요. GitHub에서 자동으로 제공하는 소스 압축 파일(Source code)은 폴더 구성이 다릅니다.
-
-설치 순서는 아래 [처음 설치하기](#처음-설치하기)에 있습니다. 15장의 예제는 해당 장에서 안내할 때 `examples/ch15/`에서 복사합니다. 오류를 발견하면 [정정 제보(Issues)](https://github.com/Juwon1405/claude-code-security-handbook/issues)에 장·절과 확인한 내용을 남겨 주세요. 예시가 필요하면 합성 자료를 사용해 주세요.
-
-## 기준 환경
-
-- macOS Apple Silicon에서 확인했습니다. 셸 예제는 bash·zsh 기준입니다. fish에서는 bash를 연 뒤 실행합니다. macOS의 zsh에서는 터미널을 열 때마다 `setopt interactivecomments`를 먼저 입력해, 명령에 붙은 `#` 주석이 명령으로 해석되지 않게 합니다.
-- 책의 주요 화면은 Claude Code 2.1.222를 기준으로 하며 일부 인증 화면은 2.1.185에서 촬영했습니다. 설치한 버전에 따라 화면이 다르면 부록 A에서 해당 기능과 확인 범위를 살펴보세요.
-- 생성기는 Python 3 표준 라이브러리만 사용합니다. macOS·Ubuntu·Windows ARM64에서 UTF-8·LF로 생성되는지 확인했으며, 같은 묶음의 파일별 체크섬으로 결과를 대조합니다.
-- jq, shasum과 기본 셸 도구가 필요합니다. 8장의 구조 검증에는 jsonschema를 추가로 설치합니다.
-- Windows 독자는 부록 D의 WSL2·Ubuntu 준비 절차에서 시작합니다. 준비 뒤에는 Ubuntu 터미널에서 본문 명령을 이어갑니다. Windows ARM64에서 확인한 범위는 Python 합성 데이터와 실행 조건을 갖춘 오프라인 시험이며, WSL2의 전체 실습과 네이티브 Windows의 Bash 샌드박스까지 확인한 것은 아닙니다.
-- 모델 호출에는 계정의 요금과 사용량 제한이 적용됩니다. 예제의 호출별 예산 상한이 책 전체 비용을 보장하지는 않습니다.
+이 안내에 따라 실습 폴더를 준비한 뒤 책의 1장으로 돌아가세요. 1~16장에서 쓰는 합성 증거 8종은 생성기로 만듭니다. 17~19장과 부록 C에서는 각 실습 폴더에서 별도의 입력을 만듭니다.
 
 ## 처음 설치하기
 
-**Windows:** 책 부록 D의 순서에 따라 Windows 다운로드 폴더에 받은 ZIP을 WSL2의 Ubuntu로 복사하세요. Ubuntu의 홈 폴더에 압축을 풀고 체크섬을 확인한 뒤, 3장에서 합성 로그를 생성합니다.
+**Windows**에서는 책의 부록 D 「Windows·WSL2에서 실습 준비하기」부터 읽으세요. Windows 다운로드 폴더의 ZIP을 WSL2의 Ubuntu로 복사하고, Ubuntu 홈에 압축을 풀어 파일을 확인합니다. 탐색기에서 이 안내를 열어 보았더라도, 실습 명령은 부록 D에서 안내하는 Ubuntu 터미널에서 실행하세요.
 
-**macOS:** ZIP을 받은 뒤 터미널에서 아래 명령을 실행하세요. 명령이 실습 폴더를 만들고 압축을 풀므로 폴더를 미리 만들 필요가 없습니다. 같은 이름의 `~/handbook-lab`이 이미 있으면 명령이 멈춥니다. 내용을 확인해 다른 이름으로 보관한 뒤 다시 실행하세요. ZIP을 다른 위치에 저장했다면 `unzip` 명령의 파일 경로를 바꾸세요.
+**macOS**에서는 아래 두 경우 가운데 현재 상태에 맞는 방법으로 실습 폴더를 준비하세요.
+
+- **이미 압축을 풀었다면** Finder에서 이 `README.md`와 `SHA256SUMS.txt`가 함께 들어 있는 폴더를 **통째로** 홈 폴더로 옮기고 이름을 `handbook-lab`으로 맞추세요. 숨김 폴더인 `.claude`도 함께 옮겨집니다. 이미 그 위치에 풀었다면 바로 아래의 ‘파일 확인과 데이터 생성’으로 가세요. 홈에 같은 이름의 다른 폴더가 있다면 따로 보관하세요.
+- **ZIP을 내려받기만 했다면** 터미널에서 다음 명령을 실행하세요. ZIP을 다운로드 폴더 외의 위치에 저장했다면 `unzip` 뒤의 경로를 바꾸세요.
 
 ```bash
 (
   set -eu
-  if [ -e ~/handbook-lab ]; then
-    echo '기존 ~/handbook-lab을 확인하고 별도 보관한 뒤 진행하세요.' >&2
-    exit 1
-  fi
   mkdir ~/handbook-lab
-  unzip ~/Downloads/handbook-lab-files-v0.3.3.zip -d ~/handbook-lab
+  unzip ~/Downloads/handbook-lab-files-v0.3.4.zip -d ~/handbook-lab
+)
+```
+
+### 파일 확인과 데이터 생성
+
+macOS에서 위 단계가 끝나면 다음 명령을 실행하세요. 배포 파일마다 `OK`가 표시되면 합성 증거 8종을 만듭니다. 검사나 생성 중 오류가 나면 해당 줄의 파일 이름과 경로를 먼저 확인하세요.
+
+```bash
+(
+  set -eu
   cd ~/handbook-lab
   shasum -a 256 -c SHA256SUMS.txt
-  python3 gen_lab_data.py ~/handbook-lab/evidence
+  python3 gen_lab_data.py evidence
   chmod +x bin/guard.sh bin/audit.sh
 )
 ```
 
-종료 오류가 없고 체크섬 검사가 모두 OK인지 확인한 뒤 다음 명령으로 실습 폴더에 들어갑니다.
+이제 터미널에서 다음 명령으로 실습 폴더에 들어가세요.
 
 ```bash
 cd ~/handbook-lab
 ```
 
+생성한 파일은 [생성 데이터 대조표](#생성-데이터-대조표)의 행 수·바이트·체크섬과 비교할 수 있습니다. 같은 자료를 사용해도 모델의 표현과 도구 선택은 달라질 수 있습니다.
+
 생성기와 `lab-manifest.txt`는 `evidence/` 밖에 둡니다. 증거 폴더에는 분석할 데이터만 놓아 모델이 생성기의 설명을 분석 근거로 사용하는 일을 피합니다. 생성기는 증거 폴더·실습 마커·매니페스트가 이미 있으면 덮어쓰지 않고 중단합니다. 처음부터 다시 연습할 때에는 기존 자료를 보관하고 새 실습 폴더를 준비합니다. 실제 사건 자료나 개인 자료가 있는 폴더는 지정하지 않습니다.
 
 `processes.csv`의 배경 행은 실제 Windows 프로세스 계보 전체를 재현한 자료가 아니며, 관계 대조 실습은 `1520 → 5820 → 5896`을 대상으로 PID뿐 아니라 호스트와 시각도 함께 확인합니다.
+
+## 기준 환경
+
+- macOS Apple Silicon에서 확인했습니다. 셸 예제는 bash·zsh 기준입니다. fish에서는 bash를 연 뒤 실행합니다. macOS의 zsh에서는 터미널을 열 때마다 `setopt interactivecomments`를 먼저 입력해, 명령에 붙은 `#` 주석이 명령으로 해석되지 않게 합니다.
+- 책의 화면과 다르면 해당 장의 버전 설명을 확인하세요. 부록 D에는 운영체제별로 확인한 범위를 정리했습니다.
+- 생성기는 Python 3 표준 라이브러리만 사용합니다. macOS·Ubuntu·Windows ARM64에서 UTF-8·LF로 생성되는지 확인했으며, 같은 묶음의 파일별 체크섬으로 결과를 대조합니다.
+- jq, shasum과 기본 셸 도구가 필요합니다. 8장의 구조 검증에는 jsonschema를 추가로 설치합니다.
+- Windows 독자는 부록 D의 WSL2·Ubuntu 준비 절차에서 시작합니다. 준비 뒤에는 Ubuntu 터미널에서 본문 명령을 이어갑니다. Windows ARM64에서 확인한 범위는 Python 합성 데이터와 실행 조건을 갖춘 오프라인 시험이며, WSL2의 전체 실습과 네이티브 Windows의 Bash 샌드박스까지 확인한 것은 아닙니다.
+- 모델 호출에는 계정의 요금과 사용량 제한이 적용됩니다. 예제의 호출별 예산 상한이 책 전체 비용을 보장하지는 않습니다.
 
 ## 8장 검증용 Python 환경
 
@@ -190,7 +195,7 @@ python3 test_safety.py
 | 증상 | 확인할 내용 |
 |---|---|
 | `zsh: command not found: #` | zsh가 주석을 명령으로 해석한 것입니다. `setopt interactivecomments`를 입력한 뒤 해당 블록의 결과를 확인하고 필요하면 다시 실행합니다. |
-| 배포 파일 체크섬 FAILED | 다른 판본과 섞였거나 파일이 변경되었는지 확인하고 묶음을 다시 대조합니다. |
+| 배포 파일 체크섬 FAILED | 실습 폴더에서 검사했는지 확인하세요. 불일치가 계속되면 새로 받은 ZIP을 빈 폴더에 풀어 해당 파일을 대조하세요. |
 | 생성 데이터의 행수·해시 불일치 | 생성기와 출력 경로를 확인하고 새 임시 폴더의 결과와 비교합니다. |
 | 프로젝트가 신뢰되지 않았다는 안내 | 자신이 만든 실습 폴더인지 먼저 확인합니다. 9장의 신뢰·설정 출처 차이를 읽고 필요한 범위만 승인합니다. |
 | 샌드박스 시작 실패 | 운영체제 지원 여부와 의존 패키지, `/sandbox`의 진단을 확인합니다. 제한을 끄고 계속 진행하지 않습니다. |
@@ -198,6 +203,10 @@ python3 test_safety.py
 | 8장 결과가 failed/로 분리됨 | 종료코드와 stderr, JSON의 오류 필드, 스키마와 원문 일치 검증을 순서대로 확인합니다. 429나 예산 초과는 성공이 아닙니다. |
 | jsonschema를 찾지 못함 | 활성화한 가상환경과 실제 `python3` 경로를 확인합니다. |
 | 모델의 답이 화면과 다름 | 답의 문장보다 입력 범위와 원문 근거를 비교합니다. 근거가 없는 단정은 수정하거나 보류합니다. |
+
+## 자료와 정정 안내
+
+ZIP은 [실습 파일 내려받기](https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.4/handbook-lab-files-v0.3.4.zip)에서 받을 수 있습니다. 오류를 발견하면 [정정 제보](https://github.com/Juwon1405/claude-code-security-handbook/issues)에 장·절과 확인한 내용을 남겨 주세요.
 
 ## 사용과 공유
 
