@@ -9,11 +9,11 @@ Manuscript and lab versions are separate. Use the bundle named in your manuscrip
 
 | Manuscript | Lab bundle |
 | --- | --- |
-| v1.12 | [v0.3.3](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.3.3) |
+| v1.12–v1.16 | [v0.3.3](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.3.3) |
 | v1.9–v1.11 | [v0.3.2](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.3.2) |
 | v1.5 | [v0.2.1](https://github.com/Juwon1405/claude-code-security-handbook/releases/tag/v0.2.1) |
 
-1. Download the attached **handbook-lab-files-v0.3.3.zip** for v1.12, not GitHub's automatic Source code ZIP.
+1. For manuscript versions v1.12–v1.16, download **[handbook-lab-files-v0.3.3.zip](https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.3/handbook-lab-files-v0.3.3.zip)** from the release assets. GitHub's automatic Source code ZIP has a different directory layout.
 2. Follow the [Korean setup guide](lab/README.md#처음-설치하기) in a new lab folder and verify the included checksums.
 3. Generate the synthetic data, then follow the chapters in order. Install the examples under `examples/ch15/` only when chapter 15 asks for them.
 
