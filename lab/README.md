@@ -15,7 +15,7 @@
 (
   set -eu
   mkdir ~/handbook-lab
-  unzip ~/Downloads/handbook-lab-files-v0.3.4.zip -d ~/handbook-lab
+  unzip ~/Downloads/handbook-lab-files-v0.3.5.zip -d ~/handbook-lab
 )
 ```
 
@@ -39,7 +39,7 @@ macOS에서 위 단계가 끝나면 다음 명령을 실행하세요. 배포 파
 cd ~/handbook-lab
 ```
 
-생성한 파일은 [생성 데이터 대조표](#생성-데이터-대조표)의 행 수·바이트·체크섬과 비교할 수 있습니다. 같은 자료를 사용해도 모델의 표현과 도구 선택은 달라질 수 있습니다.
+생성한 파일의 행 수·바이트·체크섬은 이 파일의 「생성 데이터 대조표」에서 확인하세요. 같은 자료를 사용해도 모델의 표현과 도구 선택은 달라질 수 있습니다.
 
 생성기와 `lab-manifest.txt`는 `evidence/` 밖에 둡니다. 증거 폴더에는 분석할 데이터만 놓아 모델이 생성기의 설명을 분석 근거로 사용하는 일을 피합니다. 생성기는 증거 폴더·실습 마커·매니페스트가 이미 있으면 덮어쓰지 않고 중단합니다. 처음부터 다시 연습할 때에는 기존 자료를 보관하고 새 실습 폴더를 준비합니다. 실제 사건 자료나 개인 자료가 있는 폴더는 지정하지 않습니다.
 
@@ -159,19 +159,31 @@ shasum -a 256 evidence/*.log evidence/*.jsonl evidence/*.csv \
 
 ## 종합 사례와 작은 독립 실습
 
-17~18장의 `case2/`는 기존 8종과 다른 사건입니다. 먼저 [계정 접속과 파일 접근 실습](case2/README.md)과
-[입력·출력 명세](case2/FORMAT.md)를 읽고 17장의 순서로 새 사건 폴더를 만듭니다. 인증·파일 접근·전송의
-JSONL 3종을 생성하며 분석 결과는 증거 밖의 새 폴더에 저장합니다. 같은 이름의 계정과
-재사용된 세션, 이벤트 복제, 전송 상태와 미확인 바이트를 구분하는 연습입니다.
+17~18장에서는 `case2` 폴더에 있는 두 문서를 읽고 17장의 순서대로 새 사건 폴더를 만듭니다. 아래에는 압축을 푼 폴더에서 열 파일과 웹에서 같은 문서를 읽을 수 있는 주소를 함께 적었습니다.
 
-[사건 풀이와 검산](case2/INSTRUCTOR.md)은 독립 분석을 마친 뒤 참고할 해설이므로 모델 입력과 섞지 않습니다.
+**계정 접속과 파일 접근 실습** · `case2/README.md`
+
+https://github.com/Juwon1405/claude-code-security-handbook/blob/main/lab/case2/README.md
+
+**입력·출력 명세** · `case2/FORMAT.md`
+
+https://github.com/Juwon1405/claude-code-security-handbook/blob/main/lab/case2/FORMAT.md
+
+이 실습에서는 인증·파일 접근·전송 기록을 담은 JSONL 파일 3개를 생성하고, 분석 결과는 증거 폴더 밖에 저장합니다. 같은 이름의 계정과 재사용된 세션, 중복된 이벤트, 전송 상태와 미확인 바이트를 구분해 보세요.
+
+**사건 풀이와 검산** · `case2/INSTRUCTOR.md`. 독립 분석을 마친 뒤에 열어 보세요. 해설은 모델 입력에 포함하지 않습니다.
+
+https://github.com/Juwon1405/claude-code-security-handbook/blob/main/lab/case2/INSTRUCTOR.md
 
 19장의 `recovery/`는 실제 모델을 호출하지 않고 여섯 모의 실행 자료를 만듭니다.
 `ready_for_review`는 사람이 내용을 검토할 준비가 됐다는 뜻이며, 악성 여부나 조사 완료를
 판정하지 않습니다. 본문의 명령을 같은 Bash에서 순서대로 실행하고 준비·감사 실패 시 중단합니다.
 
-부록 C의 `foundations/`는 셸과 JSON을 연습하기 위한 별도 작은 입력 12개를 만듭니다.
-자세한 순서는 [로그 분석 기초 실습](foundations/README.md)에서 확인하세요. 부록 D의 `platform/preflight.py`는
+부록 C의 **로그 분석 기초 실습**에서는 작은 입력 파일 12개로 셸과 JSON을 연습합니다. 압축을 푼 폴더에서 `foundations/README.md`를 여세요. 웹에서는 아래 주소에서 같은 안내를 읽을 수 있습니다.
+
+https://github.com/Juwon1405/claude-code-security-handbook/blob/main/lab/foundations/README.md
+
+부록 D의 `platform/preflight.py`는
 도구 유무와 정해진 지원 파일을 읽는 진단기이며, Windows 실습이나 실제 샌드박스 차단이
 검증됐다고 판정하지 않습니다.
 
@@ -190,7 +202,9 @@ python3 test_safety.py
 
 ## 오류가 났을 때
 
-문서용 예약은 도메인의 비존재나 접속 불가를 뜻하지 않습니다. `suspicious.ps1`의 예제 주소는 외부 조회·접속 없이 정적 분석에만 사용합니다. [IANA의 예시 도메인 설명](https://www.iana.org/help/example-domains)을 참고하세요.
+문서용 예약은 도메인의 비존재나 접속 불가를 뜻하지 않습니다. `suspicious.ps1`의 예제 주소는 외부 조회·접속 없이 정적 분석에만 사용합니다. 예시 도메인의 용도는 IANA의 설명을 참고하세요.
+
+https://www.iana.org/help/example-domains
 
 | 증상 | 확인할 내용 |
 |---|---|
@@ -206,7 +220,13 @@ python3 test_safety.py
 
 ## 자료와 정정 안내
 
-ZIP은 [실습 파일 내려받기](https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.4/handbook-lab-files-v0.3.4.zip)에서 받을 수 있습니다. 오류를 발견하면 [정정 제보](https://github.com/Juwon1405/claude-code-security-handbook/issues)에 장·절과 확인한 내용을 남겨 주세요.
+실습 ZIP 내려받기
+
+https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.5/handbook-lab-files-v0.3.5.zip
+
+책이나 실습에서 오류를 발견하면 아래 게시판에 장·절과 확인한 내용을 남겨 주세요.
+
+https://github.com/Juwon1405/claude-code-security-handbook/issues
 
 ## 사용과 공유
 
