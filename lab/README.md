@@ -15,7 +15,7 @@
 (
   set -eu
   mkdir ~/handbook-lab
-  unzip ~/Downloads/handbook-lab-files-v0.3.5.zip -d ~/handbook-lab
+  unzip ~/Downloads/handbook-lab-files-v2.0.zip -d ~/handbook-lab
 )
 ```
 
@@ -222,7 +222,7 @@ https://www.iana.org/help/example-domains
 
 실습 ZIP 내려받기
 
-https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v0.3.5/handbook-lab-files-v0.3.5.zip
+https://github.com/Juwon1405/claude-code-security-handbook/releases/download/v2.0/handbook-lab-files-v2.0.zip
 
 책이나 실습에서 오류를 발견하면 아래 게시판에 장·절과 확인한 내용을 남겨 주세요.
 
